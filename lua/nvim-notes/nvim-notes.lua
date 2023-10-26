@@ -1,45 +1,26 @@
 local Popup = require("nui.popup")
-local Layout = require("nui.layout")
+local event = require("nui.utils.autocmd").event
 
-local popup_one, popup_two = Popup({
+local popup = Popup({
   enter = true,
-  border = "single",
-}), Popup({
-  border = "double",
+  focusable = true,
+  border = {
+    style = "rounded",
+  },
+  position = "50%",
+  size = {
+    width = "80%",
+    height = "60%",
+  },
 })
 
-local layout = Layout(
-  {
-    position = "50%",
-    size = {
-      width = 80,
-      height = "60%",
-    },
-  },
-  Layout.Box({
-    Layout.Box(popup_one, { size = "40%" }),
-    Layout.Box(popup_two, { size = "60%" }),
-  }, { dir = "row" })
-)
+-- mount/open the component
+popup:mount()
 
-local current_dir = "row"
+-- unmount component when cursor leaves buffer
+popup:on(event.BufLeave, function()
+  popup:unmount()
+end)
 
-popup_one:map("n", "r", function()
-  if current_dir == "col" then
-    layout:update(Layout.Box({
-      Layout.Box(popup_one, { size = "40%" }),
-      Layout.Box(popup_two, { size = "60%" }),
-    }, { dir = "row" }))
-
-    current_dir = "row"
-  else
-    layout:update(Layout.Box({
-      Layout.Box(popup_two, { size = "60%" }),
-      Layout.Box(popup_one, { size = "40%" }),
-    }, { dir = "col" }))
-
-    current_dir = "col"
-  end
-end, {})
-
-layout:mount()
+-- set content
+vim.api.nvim_buf_set_lines(popup.bufnr, 0, 1, false, { "Hello World" })
