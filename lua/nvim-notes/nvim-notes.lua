@@ -12,6 +12,10 @@ local popup = Popup({
     width = "80%",
     height = "60%",
   },
+  buf_options = {
+    modifiable = true,
+    readonly = false,
+  }
 })
 
 -- mount/open the component
